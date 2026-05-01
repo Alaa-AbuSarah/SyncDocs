@@ -22,13 +22,16 @@ export default function DocsPage({
   const [project, setProject] = useState<Project | null>(null);
 
   useEffect(() => {
-    const projects = getAllProjects();
-    const found = projects.find((p) => p.id === projectId);
-    if (!found) {
-      router.replace("/");
-    } else {
-      setProject(found);
-    }
+    const timeout = setTimeout(() => {
+      const projects = getAllProjects();
+      const found = projects.find((p) => p.id === projectId);
+      if (!found) {
+        router.replace("/");
+      } else {
+        setProject(found);
+      }
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [projectId, router]);
 
   if (!project) return null;

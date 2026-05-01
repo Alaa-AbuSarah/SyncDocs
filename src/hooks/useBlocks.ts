@@ -15,7 +15,10 @@ export function useBlocks(pageId: string) {
   const [blocks, setBlocks] = useState<Block[]>([]);
 
   useEffect(() => {
-    setBlocks(getBlocksForPage(pageId));
+    const timeout = setTimeout(() => {
+      setBlocks(getBlocksForPage(pageId));
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [pageId]);
 
   const addBlock = useCallback(

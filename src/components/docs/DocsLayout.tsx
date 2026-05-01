@@ -24,7 +24,7 @@ export function DocsLayout({
   isReadOnly: initialReadOnly,
 }: DocsLayoutProps) {
   const router = useRouter();
-  const { pages, createPage, updatePageTitle, deletePage } = usePages(
+  const { pages, createPage, updatePageTitle, deletePage, reorderPages } = usePages(
     project.id
   );
   const [activePageId, setActivePageId] = useState(initialPageId);
@@ -33,9 +33,12 @@ export function DocsLayout({
   const activePage = pages.find((p) => p.id === activePageId) ?? pages[0];
 
   useEffect(() => {
-    if (pages.length > 0 && !pages.find((p) => p.id === activePageId)) {
-      setActivePageId(pages[0].id);
-    }
+    const timeout = setTimeout(() => {
+      if (pages.length > 0 && !pages.find((p) => p.id === activePageId)) {
+        setActivePageId(pages[0].id);
+      }
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [pages, activePageId]);
 
   const ensureHasTextBlock = (pageId: string) => {
@@ -90,6 +93,7 @@ export function DocsLayout({
         onSelectPage={handleSelectPage}
         onCreatePage={handleCreatePage}
         onDeletePage={handleDeletePage}
+        onReorderPages={reorderPages}
         isReadOnly={isReadOnly}
       />
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">

@@ -36,8 +36,11 @@ export function CodeBlock({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setCode(content.code);
-    setLanguage(content.language || "plaintext");
+    const timeout = setTimeout(() => {
+      setCode(content.code);
+      setLanguage(content.language || "plaintext");
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [content.code, content.language]);
 
   const handleCodeChange = (value: string) => {

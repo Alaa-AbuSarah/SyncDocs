@@ -7,6 +7,7 @@ import {
   savePage,
   updatePage as storageUpdatePage,
   deletePage as storageDeletePage,
+  updatePagesOrder as storageUpdatePagesOrder,
 } from "@/lib/storage/pages";
 import { generateId, slugify } from "@/lib/utils";
 
@@ -14,7 +15,10 @@ export function usePages(projectId: string) {
   const [pages, setPages] = useState<Page[]>([]);
 
   useEffect(() => {
-    setPages(getPagesForProject(projectId));
+    const timeout = setTimeout(() => {
+      setPages(getPagesForProject(projectId));
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [projectId]);
 
   const createPage = useCallback(
@@ -50,5 +54,24 @@ export function usePages(projectId: string) {
     [projectId]
   );
 
-  return { pages, createPage, updatePageTitle, deletePage };
+  const reorderPages = useCallback(
+    (orderedIds: string[]) => {
+      setPages((prev) => {
+        const pagesMap = new Map(prev.map((p) => [p.id, p]));
+        const updated = orderedIds
+          .map((id, idx) => {
+            const p = pagesMap.get(id);
+            return p ? { ...p, order: idx } : null;
+          })
+          .filter((p): p is Page => p !== null);
+        const existingIds = new Set(orderedIds);
+        const remaining = prev.filter((p) => !existingIds.has(p.id));
+        return [...updated, ...remaining];
+      });
+      storageUpdatePagesOrder(projectId, orderedIds);
+    },
+    [projectId]
+  );
+
+  return { pages, createPage, updatePageTitle, deletePage, reorderPages };
 }

@@ -37,7 +37,6 @@ interface TextBlockProps {
 }
 
 export function TextBlock({
-  blockId,
   content,
   onChange,
   isReadOnly,

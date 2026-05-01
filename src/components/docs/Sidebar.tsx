@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
+import Link from "next/link";
 import { Project, Page } from "@/types";
 import { SidebarPageItem } from "./SidebarPageItem";
 
@@ -11,6 +12,7 @@ interface SidebarProps {
   onSelectPage: (id: string) => void;
   onCreatePage: () => void;
   onDeletePage: (id: string) => void;
+  onReorderPages?: (pageIds: string[]) => void;
   isReadOnly: boolean;
 }
 
@@ -21,9 +23,40 @@ export function Sidebar({
   onSelectPage,
   onCreatePage,
   onDeletePage,
+  onReorderPages,
   isReadOnly,
 }: SidebarProps) {
   const [search, setSearch] = useState("");
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    if (id !== draggedId) {
+      setDragOverId(id);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    if (draggedId && draggedId !== id && onReorderPages) {
+      const oldIndex = pages.findIndex((p) => p.id === draggedId);
+      const newIndex = pages.findIndex((p) => p.id === id);
+      
+      const newPages = [...pages];
+      const [removed] = newPages.splice(oldIndex, 1);
+      newPages.splice(newIndex, 0, removed);
+      
+      onReorderPages(newPages.map((p) => p.id));
+    }
+    setDraggedId(null);
+    setDragOverId(null);
+  };
 
   const filtered = search.trim()
     ? pages.filter((p) =>
@@ -34,9 +67,9 @@ export function Sidebar({
   return (
     <aside className="w-60 flex-shrink-0 border-r border-gray-200 bg-gray-50 flex flex-col h-full">
       <div className="px-4 pt-5 pb-3 border-b border-gray-200">
-        <a href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+        <Link href="/" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
           ← All projects
-        </a>
+        </Link>
         <h1 className="text-sm font-semibold text-gray-900 mt-2 truncate">
           {project.name}
         </h1>
@@ -64,6 +97,14 @@ export function Sidebar({
             onClick={() => onSelectPage(page.id)}
             onDelete={() => onDeletePage(page.id)}
             isReadOnly={isReadOnly}
+            draggable={!isReadOnly && !search.trim()}
+            isDragged={draggedId === page.id}
+            isDropTarget={dragOverId === page.id}
+            onDragStart={(e: React.DragEvent) => handleDragStart(e, page.id)}
+            onDragOver={(e: React.DragEvent) => handleDragOver(e, page.id)}
+            onDragLeave={() => setDragOverId(null)}
+            onDrop={(e: React.DragEvent) => handleDrop(e, page.id)}
+            onDragEnd={() => { setDraggedId(null); setDragOverId(null); }}
           />
         ))}
       </nav>

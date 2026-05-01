@@ -45,3 +45,22 @@ export function deletePage(id: string, projectId: string): void {
   const pages = getPagesForProject(projectId).filter((p) => p.id !== id);
   localStorage.setItem(KEYS.pages(projectId), JSON.stringify(pages));
 }
+
+export function updatePagesOrder(projectId: string, orderedPageIds: string[]): void {
+  const pages = getPagesForProject(projectId);
+  const pagesMap = new Map(pages.map((p) => [p.id, p]));
+  
+  const updatedPages = orderedPageIds
+    .map((id, index) => {
+      const page = pagesMap.get(id);
+      return page ? { ...page, order: index } : null;
+    })
+    .filter((p): p is Page => p !== null);
+
+  const existingIds = new Set(orderedPageIds);
+  const remaining = pages.filter((p) => !existingIds.has(p.id));
+  
+  const finalPages = [...updatedPages, ...remaining];
+  
+  localStorage.setItem(KEYS.pages(projectId), JSON.stringify(finalPages));
+}

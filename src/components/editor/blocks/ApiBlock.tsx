@@ -25,7 +25,10 @@ export function ApiBlock({ content, onChange, isReadOnly }: ApiBlockProps) {
   const [draft, setDraft] = useState<ApiContent>(content);
 
   useEffect(() => {
-    setDraft(content);
+    const timeout = setTimeout(() => {
+      setDraft(content);
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [content]);
 
   const update = (partial: Partial<ApiContent>) => {

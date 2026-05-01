@@ -13,7 +13,10 @@ export function useProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    setProjects(getAllProjects());
+    const timeout = setTimeout(() => {
+      setProjects(getAllProjects());
+    }, 0);
+    return () => clearTimeout(timeout);
   }, []);
 
   const createProject = useCallback((name: string): Project => {

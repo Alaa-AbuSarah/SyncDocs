@@ -1,0 +1,195 @@
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\app\docs\[projectId]\[pageId]\page.tsx[24m[0m
+[0m  [2m30:7[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\app\docs\[projectId]\[pageId]\page.tsx:30:7[0m
+[0m  28 |       router.replace("/");[0m
+[0m  29 |     } else {[0m
+[0m> 30 |       setProject(found);[0m
+[0m     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  31 |     }[0m
+[0m  32 |   }, [projectId, router]);[0m
+[0m  33 |  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\app\share\[projectId]\[pageId]\page.tsx[24m[0m
+[0m  [2m30:7[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\app\share\[projectId]\[pageId]\page.tsx:30:7[0m
+[0m  28 |       router.replace("/");[0m
+[0m  29 |     } else {[0m
+[0m> 30 |       setProject(found);[0m
+[0m     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  31 |     }[0m
+[0m  32 |   }, [projectId, router]);[0m
+[0m  33 |  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\components\docs\DocsLayout.tsx[24m[0m
+[0m  [2m37:7[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\components\docs\DocsLayout.tsx:37:7[0m
+[0m  35 |   useEffect(() => {[0m
+[0m  36 |     if (pages.length > 0 && !pages.find((p) => p.id === activePageId)) {[0m
+[0m> 37 |       setActivePageId(pages[0].id);[0m
+[0m     |       ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  38 |     }[0m
+[0m  39 |   }, [pages, activePageId]);[0m
+[0m  40 |  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\components\docs\PageTitleEditor.tsx[24m[0m
+[0m  [2m22:21[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\components\docs\PageTitleEditor.tsx:22:21[0m
+[0m  20 |[0m
+[0m  21 |   useEffect(() => {[0m
+[0m> 22 |     if (!isFocused) setDraft(title);[0m
+[0m     |                     ^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  23 |   }, [title, isFocused]);[0m
+[0m  24 |[0m
+[0m  25 |   const commit = () => {  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m  [2m51:24[22m  [31merror[39m  Error: Cannot access refs during render[0m
+[0m[0m
+[0mReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\components\docs\PageTitleEditor.tsx:51:24[0m
+[0m  49 |   }[0m
+[0m  50 |[0m
+[0m> 51 |   const displayWidth = sizerRef.current[0m
+[0m     |                        ^^^^^^^^^^^^^^^^ Cannot access ref value during render[0m
+[0m  52 |     ? sizerRef.current.offsetWidth + 16[0m
+[0m  53 |     : Math.max(draft.length * 8, 80);[0m
+[0m  54 |                                                                                                                                                                                                                                                                                                                                                    [2mreact-hooks/refs[22m[0m
+[0m  [2m52:7[22m   [31merror[39m  Error: Cannot access refs during render[0m
+[0m[0m
+[0mReact refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\components\docs\PageTitleEditor.tsx:52:7[0m
+[0m  50 |[0m
+[0m  51 |   const displayWidth = sizerRef.current[0m
+[0m> 52 |     ? sizerRef.current.offsetWidth + 16[0m
+[0m     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Cannot access ref value during render[0m
+[0m  53 |     : Math.max(draft.length * 8, 80);[0m
+[0m  54 |[0m
+[0m  55 |   return (                                                                                                                                                                                                                                                                                                                                                   [2mreact-hooks/refs[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\components\docs\Sidebar.tsx[24m[0m
+[0m  [2m69:9[22m  [31merror[39m  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  [2m@next/next/no-html-link-for-pages[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\components\editor\blocks\ApiBlock.tsx[24m[0m
+[0m  [2m28:5[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\components\editor\blocks\ApiBlock.tsx:28:5[0m
+[0m  26 |[0m
+[0m  27 |   useEffect(() => {[0m
+[0m> 28 |     setDraft(content);[0m
+[0m     |     ^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  29 |   }, [content]);[0m
+[0m  30 |[0m
+[0m  31 |   const update = (partial: Partial<ApiContent>) => {  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\components\editor\blocks\CodeBlock.tsx[24m[0m
+[0m  [2m39:5[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\components\editor\blocks\CodeBlock.tsx:39:5[0m
+[0m  37 |[0m
+[0m  38 |   useEffect(() => {[0m
+[0m> 39 |     setCode(content.code);[0m
+[0m     |     ^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  40 |     setLanguage(content.language || "plaintext");[0m
+[0m  41 |   }, [content.code, content.language]);[0m
+[0m  42 |  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\components\editor\blocks\TextBlock.tsx[24m[0m
+[0m  [2m40:3[22m  [33mwarning[39m  'blockId' is defined but never used  [2m@typescript-eslint/no-unused-vars[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\hooks\useBlocks.ts[24m[0m
+[0m  [2m18:5[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\hooks\useBlocks.ts:18:5[0m
+[0m  16 |[0m
+[0m  17 |   useEffect(() => {[0m
+[0m> 18 |     setBlocks(getBlocksForPage(pageId));[0m
+[0m     |     ^^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  19 |   }, [pageId]);[0m
+[0m  20 |[0m
+[0m  21 |   const addBlock = useCallback(  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\hooks\usePages.ts[24m[0m
+[0m  [2m18:5[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\hooks\usePages.ts:18:5[0m
+[0m  16 |[0m
+[0m  17 |   useEffect(() => {[0m
+[0m> 18 |     setPages(getPagesForProject(projectId));[0m
+[0m     |     ^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  19 |   }, [projectId]);[0m
+[0m  20 |[0m
+[0m  21 |   const createPage = useCallback(  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[4mE:\GitHub\SyncDocs\src\hooks\useProjects.ts[24m[0m
+[0m  [2m16:5[22m  [31merror[39m  Error: Calling setState synchronously within an effect can trigger cascading renders[0m
+[0m[0m
+[0mEffects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:[0m
+[0m* Update external systems with the latest state from React.[0m
+[0m* Subscribe for updates from some external system, calling setState in a callback function when external state changes.[0m
+[0m[0m
+[0mCalling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).[0m
+[0m[0m
+[0mE:\GitHub\SyncDocs\src\hooks\useProjects.ts:16:5[0m
+[0m  14 |[0m
+[0m  15 |   useEffect(() => {[0m
+[0m> 16 |     setProjects(getAllProjects());[0m
+[0m     |     ^^^^^^^^^^^ Avoid calling setState() directly within an effect[0m
+[0m  17 |   }, []);[0m
+[0m  18 |[0m
+[0m  19 |   const createProject = useCallback((name: string): Project => {  [2mreact-hooks/set-state-in-effect[22m[0m
+[0m[0m
+[0m[31m[1m✖ 13 problems (12 errors, 1 warning)[22m[39m[0m
+[0m[31m[1m[22m[39m[0m

@@ -18,9 +18,25 @@ export function PageTitleEditor({
   const inputRef = useRef<HTMLInputElement>(null);
   const sizerRef = useRef<HTMLSpanElement>(null);
 
+  const [displayWidth, setDisplayWidth] = useState<number>(80);
+
   useEffect(() => {
-    if (!isFocused) setDraft(title);
+    const timeout = setTimeout(() => {
+      if (!isFocused) setDraft(title);
+    }, 0);
+    return () => clearTimeout(timeout);
   }, [title, isFocused]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (sizerRef.current) {
+        setDisplayWidth(sizerRef.current.offsetWidth + 16);
+      } else {
+        setDisplayWidth(Math.max(draft.length * 8, 80));
+      }
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, [draft]);
 
   const commit = () => {
     setIsFocused(false);
@@ -48,9 +64,7 @@ export function PageTitleEditor({
     );
   }
 
-  const displayWidth = sizerRef.current
-    ? sizerRef.current.offsetWidth + 16
-    : Math.max(draft.length * 8, 80);
+  // displayWidth is managed via effect now
 
   return (
     <div className="relative flex items-center">
