@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useBlocks } from "@/hooks/useBlocks";
 import { Block, TextContent, CodeContent, ApiContent } from "@/types";
 import { BlockWrapper } from "./BlockWrapper";
@@ -15,8 +16,39 @@ interface BlockEditorProps {
 }
 
 export function BlockEditor({ pageId, isReadOnly }: BlockEditorProps) {
-  const { blocks, addBlock, updateBlockContent, removeBlock } =
+  const { blocks, addBlock, updateBlockContent, removeBlock, reorderBlocks } =
     useBlocks(pageId);
+
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  const handleDragStart = (e: React.DragEvent, id: string) => {
+    setDraggedId(id);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    if (id !== draggedId) {
+      setDragOverId(id);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent, id: string) => {
+    e.preventDefault();
+    if (draggedId && draggedId !== id) {
+      const oldIndex = blocks.findIndex((b) => b.id === draggedId);
+      const newIndex = blocks.findIndex((b) => b.id === id);
+      
+      const newBlocks = [...blocks];
+      const [removed] = newBlocks.splice(oldIndex, 1);
+      newBlocks.splice(newIndex, 0, removed);
+      
+      reorderBlocks(newBlocks.map((b) => b.id));
+    }
+    setDraggedId(null);
+    setDragOverId(null);
+  };
 
   const renderBlock = (block: Block) => {
     switch (block.type) {
@@ -83,6 +115,16 @@ export function BlockEditor({ pageId, isReadOnly }: BlockEditorProps) {
             key={block.id}
             onDelete={() => removeBlock(block.id)}
             isReadOnly={isReadOnly}
+            isDragged={draggedId === block.id}
+            isDropTarget={dragOverId === block.id}
+            onDragStart={(e) => handleDragStart(e, block.id)}
+            onDragOver={(e) => handleDragOver(e, block.id)}
+            onDragLeave={() => setDragOverId(null)}
+            onDrop={(e) => handleDrop(e, block.id)}
+            onDragEnd={() => {
+              setDraggedId(null);
+              setDragOverId(null);
+            }}
           >
             {renderBlock(block)}
           </BlockWrapper>
