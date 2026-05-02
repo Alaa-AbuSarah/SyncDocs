@@ -7,19 +7,19 @@ import {
   updateProject as persistUpdate,
   deleteProject as persistDelete,
 } from "@/lib/storage";
-import { slugify } from "@/lib/utils";
+import { slugify, isSlugUnique } from "@/lib/utils";
 
 interface ProjectStore {
   projects: Project[];
   activeProjectId: string | null;
   activePageId: string | null;
 
-  // Hydrate from localStorage
   hydrate: () => void;
 
   // Projects
-  createProject: (name: string) => Project;
+  createProject: (name: string, customSlug?: string) => Project;
   deleteProject: (id: string) => void;
+  updateProjectSlug: (id: string, slug: string) => boolean;
   setActiveProject: (id: string | null) => void;
 
   // Pages
@@ -42,11 +42,13 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     set({ projects: getProjects() });
   },
 
-  createProject(name) {
+  createProject(name, customSlug) {
+    const slug =
+      customSlug?.trim() || slugify(name) || nanoid(6);
     const project: Project = {
       id: nanoid(),
       name,
-      slug: slugify(name) || nanoid(6),
+      slug,
       createdAt: Date.now(),
       pages: [],
     };
@@ -60,6 +62,17 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     const projects = get().projects.filter((p) => p.id !== id);
     set({ projects, activeProjectId: null, activePageId: null });
     persistDelete(id);
+  },
+
+  // Returns false when the slug is already taken by another project.
+  updateProjectSlug(id, slug) {
+    if (!isSlugUnique(slug, get().projects, id)) return false;
+    const projects = get().projects.map((p) =>
+      p.id === id ? { ...p, slug } : p
+    );
+    set({ projects });
+    persistUpdate(projects.find((p) => p.id === id)!);
+    return true;
   },
 
   setActiveProject(id) {
@@ -78,20 +91,14 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       p.id === projectId ? { ...p, pages: [...p.pages, page] } : p
     );
     set({ projects, activePageId: page.id });
-    const updated = projects.find((p) => p.id === projectId)!;
-    persistUpdate(updated);
+    persistUpdate(projects.find((p) => p.id === projectId)!);
     return page;
   },
 
   updatePageTitle(projectId, pageId, title) {
     const projects = get().projects.map((p) =>
       p.id === projectId
-        ? {
-            ...p,
-            pages: p.pages.map((pg) =>
-              pg.id === pageId ? { ...pg, title } : pg
-            ),
-          }
+        ? { ...p, pages: p.pages.map((pg) => (pg.id === pageId ? { ...pg, title } : pg)) }
         : p
     );
     set({ projects });
@@ -99,16 +106,13 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   },
 
   deletePage(projectId, pageId) {
-    // Also delete all descendants
     const project = get().projects.find((p) => p.id === projectId);
     if (!project) return;
 
     const toDelete = new Set<string>();
     const collect = (id: string) => {
       toDelete.add(id);
-      project.pages
-        .filter((pg) => pg.parentId === id)
-        .forEach((pg) => collect(pg.id));
+      project.pages.filter((pg) => pg.parentId === id).forEach((pg) => collect(pg.id));
     };
     collect(pageId);
 
@@ -120,9 +124,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     set({
       projects,
       activePageId:
-        get().activePageId && toDelete.has(get().activePageId!)
-          ? null
-          : get().activePageId,
+        get().activePageId && toDelete.has(get().activePageId!) ? null : get().activePageId,
     });
     persistUpdate(projects.find((p) => p.id === projectId)!);
   },
@@ -142,12 +144,7 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   updateBlocks(projectId, pageId, blocks) {
     const projects = get().projects.map((p) =>
       p.id === projectId
-        ? {
-            ...p,
-            pages: p.pages.map((pg) =>
-              pg.id === pageId ? { ...pg, blocks } : pg
-            ),
-          }
+        ? { ...p, pages: p.pages.map((pg) => (pg.id === pageId ? { ...pg, blocks } : pg)) }
         : p
     );
     set({ projects });
