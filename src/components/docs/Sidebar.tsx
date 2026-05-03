@@ -239,6 +239,19 @@ export function Sidebar({ project, activePageId, readOnly = false }: SidebarProp
           </DndContext>
         )}
       </div>
+
+      {/* Powered-by footer — share page only */}
+      {readOnly && (
+        <div className="px-4 py-3 border-t border-gray-200 flex items-center gap-2">
+          <img src="/logo.png" alt="SyncDocs" className="w-4 h-4 object-contain opacity-60" />
+          <span className="text-xs text-gray-400">
+            Run by{" "}
+            <a href="/" className="text-gray-500 font-medium hover:text-gray-900 transition-colors">
+              SyncDocs
+            </a>
+          </span>
+        </div>
+      )}
     </aside>
   );
 }
