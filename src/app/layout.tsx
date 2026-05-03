@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "SyncDocs",
-  description: "A minimal documentation platform",
+  description: "A modern, Notion-inspired documentation platform for teams.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

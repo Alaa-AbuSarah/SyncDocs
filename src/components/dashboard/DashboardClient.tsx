@@ -5,8 +5,8 @@ import { useProjectStore } from "@/store/useProjectStore";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { CreateProjectModal } from "@/components/dashboard/CreateProjectModal";
 import { Button } from "@/components/shared/Button";
-import { EmptyState } from "@/components/shared/EmptyState";
 import { createClient } from "@/lib/supabase/client";
+import { createDemoProjects } from "@/lib/createDemoProjects";
 
 interface DashboardClientProps {
   userId: string;
@@ -17,11 +17,22 @@ interface DashboardClientProps {
 export function DashboardClient({ userId, avatarUrl, displayName }: DashboardClientProps) {
   const { projects, hydrate, loading } = useProjectStore();
   const [showCreate, setShowCreate] = useState(false);
+  const [loadingDemo, setLoadingDemo] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     hydrate(userId);
   }, [hydrate, userId]);
+
+  const handleLoadDemo = async () => {
+    setLoadingDemo(true);
+    try {
+      await createDemoProjects(userId);
+      await hydrate(userId);
+    } finally {
+      setLoadingDemo(false);
+    }
+  };
 
   const handleLogout = async () => {
     await createClient().auth.signOut();
@@ -36,7 +47,10 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-          <span className="text-sm font-semibold text-gray-900">SyncDocs</span>
+          <div className="flex items-center gap-2">
+            <img src="/logo.png" alt="SyncDocs" className="w-6 h-6 object-contain" />
+            <span className="text-sm font-semibold text-gray-900">SyncDocs</span>
+          </div>
 
           <div className="flex items-center gap-3">
             <Button onClick={() => setShowCreate(true)}>+ New project</Button>
@@ -93,12 +107,40 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
             </div>
 
             {projects.length === 0 ? (
-              <EmptyState
-                icon="📄"
-                title="No projects yet"
-                description="Create your first project to start documenting."
-                action={<Button onClick={() => setShowCreate(true)}>Create project</Button>}
-              />
+              <div className="flex flex-col items-center justify-center py-24 gap-6 text-center">
+                <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium text-gray-900">No projects yet</p>
+                  <p className="text-sm text-gray-400">Create a blank project or load demo content to explore.</p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Button onClick={() => setShowCreate(true)}>New project</Button>
+                  <div className="w-px h-4 bg-gray-200" />
+                  <button
+                    onClick={handleLoadDemo}
+                    disabled={loadingDemo}
+                    className="text-sm text-gray-500 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5"
+                  >
+                    {loadingDemo ? (
+                      <>
+                        <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                        </svg>
+                        Loading demo…
+                      </>
+                    ) : (
+                      "Load demo projects"
+                    )}
+                  </button>
+                </div>
+              </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {projects.map((project) => (
