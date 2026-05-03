@@ -1,7 +1,9 @@
 "use client";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Project } from "@/types";
 import { useProjectStore } from "@/store/useProjectStore";
+import { DeleteProjectModal } from "@/components/dashboard/DeleteProjectModal";
 
 interface ProjectCardProps {
   project: Project;
@@ -28,12 +30,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const router = useRouter();
   const deleteProject = useProjectStore((s) => s.deleteProject);
   const pageCount = project.pages.length;
+  const [showDelete, setShowDelete] = useState(false);
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm(`Delete "${project.name}"? This cannot be undone.`)) {
-      deleteProject(project.id);
-    }
+    setShowDelete(true);
   };
 
   return (
@@ -61,7 +62,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
         {/* Delete — only on hover */}
         <button
-          onClick={handleDelete}
+          onClick={handleDeleteClick}
           title="Delete project"
           className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all shrink-0"
         >
@@ -110,6 +111,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
           value={timeAgo(project.updatedAt)}
         />
       </div>
+
+      <DeleteProjectModal
+        open={showDelete}
+        projectName={project.name}
+        onConfirm={() => deleteProject(project.id)}
+        onClose={() => setShowDelete(false)}
+      />
     </div>
   );
 }
