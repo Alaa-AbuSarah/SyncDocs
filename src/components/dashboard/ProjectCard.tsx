@@ -64,7 +64,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         <button
           onClick={handleDeleteClick}
           title="Delete project"
-          className="opacity-0 group-hover:opacity-100 p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all shrink-0"
+          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all shrink-0"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <polyline points="3 6 5 6 21 6" />

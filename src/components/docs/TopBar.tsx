@@ -53,7 +53,7 @@ export function TopBar({ project, readOnly = false, userId, avatarUrl, displayNa
         {!readOnly && (
           <button
             onClick={() => router.push("/")}
-            className="hidden md:inline text-gray-400 hover:text-gray-700 transition-colors text-sm shrink-0"
+            className="text-gray-400 hover:text-gray-700 transition-colors text-sm shrink-0"
           >
             ←
           </button>
