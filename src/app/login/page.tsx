@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { LoginButton } from "@/components/auth/LoginButton";
 
 export default function LoginPage() {
@@ -14,7 +15,7 @@ export default function LoginPage() {
         <div className="bg-white/80 backdrop-blur-sm border border-white/60 rounded-2xl shadow-xl shadow-black/5 p-8 flex flex-col gap-8">
           {/* Logo + Branding */}
           <div className="flex flex-col items-center gap-3">
-            <img src="/logo.png" alt="SyncDocs" className="w-14 h-14 object-contain" />
+            <Image src="/logo.png" alt="SyncDocs" width={56} height={56} className="object-contain" />
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
                 SyncDocs

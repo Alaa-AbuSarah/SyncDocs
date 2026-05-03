@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProjectStore } from "@/store/useProjectStore";
@@ -48,7 +49,7 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="SyncDocs" className="w-6 h-6 object-contain" />
+            <Image src="/logo.png" alt="SyncDocs" width={24} height={24} className="object-contain" />
             <span className="text-sm font-semibold text-gray-900">SyncDocs</span>
           </div>
 
@@ -59,6 +60,7 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
             <div className="flex items-center gap-1.5">
               <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 shrink-0 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                 {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={avatarUrl}
                     alt={displayName ?? "User avatar"}

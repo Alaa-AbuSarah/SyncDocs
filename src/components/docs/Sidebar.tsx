@@ -18,6 +18,8 @@ import {
 import type { Project, Page } from "@/types";
 import { SidebarPageItem } from "./SidebarPageItem";
 import type { DropPosition } from "./SidebarPageItem";
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/shared/Button";
 import { useProjectStore } from "@/store/useProjectStore";
 import { searchPages } from "@/lib/utils";
@@ -267,12 +269,12 @@ export function Sidebar({ project, activePageId, readOnly = false, isOpen = fals
       {/* Powered-by footer — share page only */}
       {readOnly && (
         <div className="px-4 py-3 border-t border-gray-200 flex items-center gap-2">
-          <img src="/logo.png" alt="SyncDocs" className="w-4 h-4 object-contain opacity-60" />
+          <Image src="/logo.png" alt="SyncDocs" width={16} height={16} className="object-contain opacity-60" />
           <span className="text-xs text-gray-400">
             Run by{" "}
-            <a href="/" className="text-gray-500 font-medium hover:text-gray-900 transition-colors">
+            <Link href="/" className="text-gray-500 font-medium hover:text-gray-900 transition-colors">
               SyncDocs
-            </a>
+            </Link>
           </span>
         </div>
       )}

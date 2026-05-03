@@ -79,6 +79,7 @@ export function TopBar({ project, readOnly = false, userId, avatarUrl, displayNa
             {/* Avatar */}
             <div className="w-7 h-7 rounded-full overflow-hidden border border-gray-200 shrink-0 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
               {avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={avatarUrl}
                   alt={displayName ?? "User avatar"}
