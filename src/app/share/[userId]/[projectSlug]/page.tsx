@@ -1,26 +1,17 @@
-"use client";
-import { use, useEffect, useState } from "react";
-import { useProjectStore } from "@/store/useProjectStore";
-import { DocsLayout } from "@/components/docs/DocsLayout";
+import { createClient } from "@/lib/supabase/server";
+import { fetchProjectBySlug } from "@/lib/db";
+import { ShareViewer } from "@/components/share/ShareViewer";
 import { EmptyState } from "@/components/shared/EmptyState";
 
 interface Props {
   params: Promise<{ userId: string; projectSlug: string }>;
 }
 
-export default function SharePage({ params }: Props) {
-  const { projectSlug } = use(params);
-  const { projects, hydrate } = useProjectStore();
-  const [ready, setReady] = useState(false);
+export default async function SharePage({ params }: Props) {
+  const { userId, projectSlug } = await params;
+  const supabase = await createClient();
 
-  useEffect(() => {
-    hydrate();
-    setReady(true);
-  }, [hydrate]);
-
-  if (!ready) return null;
-
-  const project = projects.find((p) => p.slug === projectSlug);
+  const project = await fetchProjectBySlug(supabase, userId, projectSlug);
 
   if (!project) {
     return (
@@ -34,5 +25,5 @@ export default function SharePage({ params }: Props) {
     );
   }
 
-  return <DocsLayout projectId={project.id} readOnly />;
+  return <ShareViewer project={project} />;
 }

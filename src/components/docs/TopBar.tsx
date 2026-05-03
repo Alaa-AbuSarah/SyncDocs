@@ -3,18 +3,20 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Project } from "@/types";
 import { Button } from "@/components/shared/Button";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 interface TopBarProps {
   project: Project;
   readOnly?: boolean;
+  userId?: string;
 }
 
-export function TopBar({ project, readOnly = false }: TopBarProps) {
+export function TopBar({ project, readOnly = false, userId }: TopBarProps) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/share/demo-user/${project.slug}`;
+    const url = `${window.location.origin}/share/${userId}/${project.slug}`;
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -42,9 +44,12 @@ export function TopBar({ project, readOnly = false }: TopBarProps) {
       </div>
 
       {!readOnly && (
-        <Button variant="ghost" size="sm" onClick={handleShare}>
-          {copied ? "✓ Copied!" : "Share"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={handleShare}>
+            {copied ? "✓ Copied!" : "Share"}
+          </Button>
+          <LogoutButton />
+        </div>
       )}
     </header>
   );

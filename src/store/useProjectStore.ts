@@ -1,23 +1,28 @@
 import { create } from "zustand";
-import { nanoid } from "nanoid";
 import type { Project, Page, Block } from "@/types";
-import {
-  getProjects,
-  saveProjects,
-  updateProject as persistUpdate,
-  deleteProject as persistDelete,
-} from "@/lib/storage";
 import { slugify, isSlugUnique } from "@/lib/utils";
+import {
+  fetchProjects,
+  insertProject,
+  updateProjectSlugInDB,
+  removeProject,
+  insertPage,
+  updatePage,
+  updatePagesBatch,
+  removePage,
+} from "@/lib/db";
 
 interface ProjectStore {
   projects: Project[];
   activeProjectId: string | null;
   activePageId: string | null;
+  userId: string | null;
+  loading: boolean;
 
-  hydrate: () => void;
+  hydrate: (userId: string) => Promise<void>;
 
   // Projects
-  createProject: (name: string, customSlug?: string) => Project;
+  createProject: (name: string, customSlug?: string) => Promise<Project>;
   deleteProject: (id: string) => void;
   updateProjectSlug: (id: string, slug: string) => boolean;
   setActiveProject: (id: string | null) => void;
@@ -37,41 +42,43 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
   projects: [],
   activeProjectId: null,
   activePageId: null,
+  userId: null,
+  loading: false,
 
-  hydrate() {
-    set({ projects: getProjects() });
+  async hydrate(userId) {
+    set({ loading: true, userId });
+    try {
+      const projects = await fetchProjects(userId);
+      set({ projects, loading: false });
+    } catch (err) {
+      console.error("hydrate error", err);
+      set({ loading: false });
+    }
   },
 
-  createProject(name, customSlug) {
-    const slug =
-      customSlug?.trim() || slugify(name) || nanoid(6);
-    const project: Project = {
-      id: nanoid(),
-      name,
-      slug,
-      createdAt: Date.now(),
-      pages: [],
-    };
-    const projects = [...get().projects, project];
-    set({ projects });
-    saveProjects(projects);
+  async createProject(name, customSlug) {
+    const slug = customSlug?.trim() || slugify(name) || crypto.randomUUID().slice(0, 8);
+    const userId = get().userId!;
+    const project = await insertProject(userId, name, slug);
+    set({ projects: [...get().projects, project] });
     return project;
   },
 
   deleteProject(id) {
-    const projects = get().projects.filter((p) => p.id !== id);
-    set({ projects, activeProjectId: null, activePageId: null });
-    persistDelete(id);
+    set({
+      projects: get().projects.filter((p) => p.id !== id),
+      activeProjectId: null,
+      activePageId: null,
+    });
+    removeProject(id).catch(console.error);
   },
 
-  // Returns false when the slug is already taken by another project.
   updateProjectSlug(id, slug) {
     if (!isSlugUnique(slug, get().projects, id)) return false;
-    const projects = get().projects.map((p) =>
-      p.id === id ? { ...p, slug } : p
-    );
-    set({ projects });
-    persistUpdate(projects.find((p) => p.id === id)!);
+    set({
+      projects: get().projects.map((p) => (p.id === id ? { ...p, slug } : p)),
+    });
+    updateProjectSlugInDB(id, slug).catch(console.error);
     return true;
   },
 
@@ -81,17 +88,19 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
   createPage(projectId, parentId = null) {
     const page: Page = {
-      id: nanoid(),
+      id: crypto.randomUUID(),
       title: "Untitled",
       parentId,
       order: Date.now(),
       blocks: [],
     };
-    const projects = get().projects.map((p) =>
-      p.id === projectId ? { ...p, pages: [...p.pages, page] } : p
-    );
-    set({ projects, activePageId: page.id });
-    persistUpdate(projects.find((p) => p.id === projectId)!);
+    set({
+      projects: get().projects.map((p) =>
+        p.id === projectId ? { ...p, pages: [...p.pages, page] } : p
+      ),
+      activePageId: page.id,
+    });
+    insertPage(projectId, page).catch(console.error);
     return page;
   },
 
@@ -102,7 +111,10 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         : p
     );
     set({ projects });
-    persistUpdate(projects.find((p) => p.id === projectId)!);
+    const page = projects
+      .find((p) => p.id === projectId)
+      ?.pages.find((pg) => pg.id === pageId);
+    if (page) updatePage(projectId, page).catch(console.error);
   },
 
   deletePage(projectId, pageId) {
@@ -116,25 +128,24 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     };
     collect(pageId);
 
-    const projects = get().projects.map((p) =>
-      p.id === projectId
-        ? { ...p, pages: p.pages.filter((pg) => !toDelete.has(pg.id)) }
-        : p
-    );
+    const currentActiveId = get().activePageId;
     set({
-      projects,
-      activePageId:
-        get().activePageId && toDelete.has(get().activePageId!) ? null : get().activePageId,
+      projects: get().projects.map((p) =>
+        p.id === projectId
+          ? { ...p, pages: p.pages.filter((pg) => !toDelete.has(pg.id)) }
+          : p
+      ),
+      activePageId: currentActiveId && toDelete.has(currentActiveId) ? null : currentActiveId,
     });
-    persistUpdate(projects.find((p) => p.id === projectId)!);
+    // DB cascade handles children via FK; only delete the root
+    removePage(pageId).catch(console.error);
   },
 
   reorderPages(projectId, pages) {
-    const projects = get().projects.map((p) =>
-      p.id === projectId ? { ...p, pages } : p
-    );
-    set({ projects });
-    persistUpdate(projects.find((p) => p.id === projectId)!);
+    set({
+      projects: get().projects.map((p) => (p.id === projectId ? { ...p, pages } : p)),
+    });
+    updatePagesBatch(projectId, pages).catch(console.error);
   },
 
   setActivePage(id) {
@@ -148,6 +159,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         : p
     );
     set({ projects });
-    persistUpdate(projects.find((p) => p.id === projectId)!);
+    const page = projects
+      .find((p) => p.id === projectId)
+      ?.pages.find((pg) => pg.id === pageId);
+    if (page) updatePage(projectId, page).catch(console.error);
   },
 }));

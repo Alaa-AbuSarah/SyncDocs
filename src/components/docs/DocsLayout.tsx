@@ -11,17 +11,16 @@ import type { Block } from "@/types";
 interface DocsLayoutProps {
   projectId: string;
   readOnly?: boolean;
-  // For read-only share page, project is passed directly without hydrate
-  preloadedProjectId?: string;
+  userId?: string;
 }
 
-export function DocsLayout({ projectId, readOnly = false }: DocsLayoutProps) {
+export function DocsLayout({ projectId, readOnly = false, userId }: DocsLayoutProps) {
   const { projects, hydrate, activePageId, setActivePage, updatePageTitle, updateBlocks } =
     useProjectStore();
 
   useEffect(() => {
-    hydrate();
-  }, [hydrate]);
+    if (userId) hydrate(userId);
+  }, [hydrate, userId]);
 
   const project = projects.find((p) => p.id === projectId);
 
@@ -49,7 +48,7 @@ export function DocsLayout({ projectId, readOnly = false }: DocsLayoutProps) {
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <TopBar project={project} readOnly={readOnly} />
+      <TopBar project={project} readOnly={readOnly} userId={userId} />
       <div className="flex flex-1 min-h-0">
         <Sidebar
           project={project}

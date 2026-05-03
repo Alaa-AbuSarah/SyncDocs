@@ -37,10 +37,10 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const slugError = slug && !isSlugUnique(slug, projects) ? "Slug already taken" : null;
   const canSubmit = name.trim() && slug && !slugError;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    const project = createProject(name.trim(), slug);
+    const project = await createProject(name.trim(), slug);
     onClose();
     router.push(`/docs/${project.id}`);
   };
