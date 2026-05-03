@@ -51,9 +51,11 @@ interface SidebarProps {
   project: Project;
   activePageId: string | null;
   readOnly?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export function Sidebar({ project, activePageId, readOnly = false }: SidebarProps) {
+export function Sidebar({ project, activePageId, readOnly = false, isOpen = false, onClose }: SidebarProps) {
   const { setActivePage, createPage, updatePageTitle, deletePage, reorderPages } =
     useProjectStore();
 
@@ -136,6 +138,11 @@ export function Sidebar({ project, activePageId, readOnly = false }: SidebarProp
     setDropState(null);
   }, []);
 
+  const handleSelect = useCallback((id: string) => {
+    setActivePage(id);
+    onClose?.();
+  }, [setActivePage, onClose]);
+
   // Search: compute matching IDs when a query is present.
   const matchingIds = searchQuery ? searchPages(sorted, searchQuery) : null;
 
@@ -152,7 +159,7 @@ export function Sidebar({ project, activePageId, readOnly = false }: SidebarProp
             depth={depth}
             isActive={page.id === activePageId}
             dropPosition={dropState?.overId === page.id ? dropState.position : null}
-            onSelect={setActivePage}
+            onSelect={handleSelect}
             onRename={(id, title) => updatePageTitle(project.id, id, title)}
             onDelete={(id) => deletePage(project.id, id)}
             onAddChild={(pid) => createPage(project.id, pid)}
@@ -167,7 +174,24 @@ export function Sidebar({ project, activePageId, readOnly = false }: SidebarProp
   const activePage = activeId ? project.pages.find((p) => p.id === activeId) : null;
 
   return (
-    <aside className="w-60 shrink-0 border-r border-gray-200 bg-gray-50 flex flex-col h-full overflow-hidden">
+    <>
+      {/* Mobile backdrop — closes sidebar when tapping outside */}
+      <div
+        className={cn(
+          "fixed inset-0 z-30 bg-black/20 md:hidden transition-opacity duration-200",
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+        onClick={onClose}
+      />
+
+    <aside className={cn(
+      "w-60 shrink-0 border-r border-gray-200 bg-gray-50 flex flex-col overflow-hidden",
+      // Mobile: fixed overlay that slides in/out
+      "fixed inset-y-0 left-0 z-40 transition-transform duration-200",
+      isOpen ? "translate-x-0" : "-translate-x-full",
+      // Desktop: reset to static in-flow element
+      "md:relative md:translate-x-0 md:h-full"
+    )}>
       {/* Header */}
       <div className="px-3 py-3 border-b border-gray-200 flex flex-col gap-2">
         {readOnly ? (
@@ -253,5 +277,6 @@ export function Sidebar({ project, activePageId, readOnly = false }: SidebarProp
         </div>
       )}
     </aside>
+    </>
   );
 }

@@ -106,10 +106,10 @@ export function SidebarPageItem({
           <span className="flex-1 truncate leading-snug">{page.title}</span>
         )}
 
-        {/* Hover actions */}
+        {/* Hover actions — always visible on touch devices via sidebar-page-actions CSS class */}
         {!readOnly && (
           <div
-            className="hidden group-hover:flex items-center gap-0.5 shrink-0"
+            className="sidebar-page-actions hidden group-hover:flex items-center gap-0.5 shrink-0"
             onClick={(e) => e.stopPropagation()}
           >
             <button

@@ -257,3 +257,16 @@ body {
 .ProseMirror [data-node-view-wrapper] {
   display: block;
 }
+
+/* ─── Mobile: table horizontal scroll ───────────────── */
+.ProseMirror .tableWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── Mobile: sidebar page actions always visible on touch devices ── */
+@media (hover: none) {
+  .sidebar-page-actions {
+    display: flex !important;
+  }
+}

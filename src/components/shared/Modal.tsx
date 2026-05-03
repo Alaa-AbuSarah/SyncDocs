@@ -34,7 +34,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
     >
       <div
         className={cn(
-          "bg-white rounded-xl shadow-xl border border-gray-100 w-full max-w-md p-6",
+          "bg-white rounded-xl shadow-xl border border-gray-100 w-full max-w-md mx-4 sm:mx-0 p-5 sm:p-6",
           className
         )}
       >

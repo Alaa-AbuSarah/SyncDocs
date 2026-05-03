@@ -46,7 +46,7 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img src="/logo.png" alt="SyncDocs" className="w-6 h-6 object-contain" />
             <span className="text-sm font-semibold text-gray-900">SyncDocs</span>
@@ -94,7 +94,7 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-10">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {loading ? (
           <p className="text-sm text-gray-400">Loading projects…</p>
         ) : (
@@ -120,9 +120,9 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
                   <p className="text-sm text-gray-400">Create a blank project or load demo content to explore.</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center justify-center gap-3">
                   <Button onClick={() => setShowCreate(true)}>New project</Button>
-                  <div className="w-px h-4 bg-gray-200" />
+                  <div className="hidden sm:block w-px h-4 bg-gray-200" />
                   <button
                     onClick={handleLoadDemo}
                     disabled={loadingDemo}

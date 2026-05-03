@@ -11,9 +11,10 @@ interface TopBarProps {
   userId?: string;
   avatarUrl?: string;
   displayName?: string;
+  onMobileMenuToggle?: () => void;
 }
 
-export function TopBar({ project, readOnly = false, userId, avatarUrl, displayName }: TopBarProps) {
+export function TopBar({ project, readOnly = false, userId, avatarUrl, displayName, onMobileMenuToggle }: TopBarProps) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
 
@@ -36,10 +37,23 @@ export function TopBar({ project, readOnly = false, userId, avatarUrl, displayNa
   return (
     <header className="h-12 border-b border-gray-200 bg-white flex items-center justify-between px-5 shrink-0">
       <div className="flex items-center gap-2 min-w-0">
+        {/* Hamburger — mobile only, opens page sidebar */}
+        <button
+          onClick={onMobileMenuToggle}
+          aria-label="Toggle navigation"
+          className="md:hidden p-1.5 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors shrink-0"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+
         {!readOnly && (
           <button
             onClick={() => router.push("/")}
-            className="text-gray-400 hover:text-gray-700 transition-colors text-sm shrink-0"
+            className="hidden md:inline text-gray-400 hover:text-gray-700 transition-colors text-sm shrink-0"
           >
             ←
           </button>

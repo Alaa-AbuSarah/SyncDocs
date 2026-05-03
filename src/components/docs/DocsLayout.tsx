@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProjectStore } from "@/store/useProjectStore";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
@@ -19,6 +19,7 @@ interface DocsLayoutProps {
 export function DocsLayout({ projectId, readOnly = false, userId, avatarUrl, displayName }: DocsLayoutProps) {
   const { projects, hydrate, activePageId, setActivePage, updatePageTitle, updateBlocks } =
     useProjectStore();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (userId) hydrate(userId);
@@ -50,17 +51,26 @@ export function DocsLayout({ projectId, readOnly = false, userId, avatarUrl, dis
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <TopBar project={project} readOnly={readOnly} userId={userId} avatarUrl={avatarUrl} displayName={displayName} />
+      <TopBar
+        project={project}
+        readOnly={readOnly}
+        userId={userId}
+        avatarUrl={avatarUrl}
+        displayName={displayName}
+        onMobileMenuToggle={() => setSidebarOpen((o) => !o)}
+      />
       <div className="flex flex-1 min-h-0">
         <Sidebar
           project={project}
           activePageId={activePageId}
           readOnly={readOnly}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
         />
 
         <main className="flex-1 overflow-y-auto">
           {activePage ? (
-            <div className="max-w-3xl mx-auto px-10 py-10">
+            <div className="max-w-3xl mx-auto px-4 py-6 sm:px-8 sm:py-8 md:px-10 md:py-10">
               <PageTitleEditor
                 page={activePage}
                 onRename={(id, title) => updatePageTitle(project.id, id, title)}
