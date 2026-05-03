@@ -39,5 +39,6 @@ export interface Project {
   name: string;
   slug: string;
   createdAt: number;
+  updatedAt: number;
   pages: Page[];
 }

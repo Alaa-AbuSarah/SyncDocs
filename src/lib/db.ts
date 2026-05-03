@@ -11,6 +11,7 @@ interface DBProject {
   name: string;
   slug: string;
   created_at: string;
+  updated_at: string;
 }
 
 interface DBPage {
@@ -20,6 +21,7 @@ interface DBPage {
   title: string;
   order: number;
   blocks: Block[];
+  updated_at: string;
 }
 
 function dbPageToPage(row: DBPage): Page {
@@ -58,15 +60,22 @@ export async function fetchProjects(userId: string): Promise<Project[]> {
 
   if (pgErr) throw pgErr;
 
-  return (projectRows as DBProject[]).map((p): Project => ({
-    id: p.id,
-    name: p.name,
-    slug: p.slug,
-    createdAt: new Date(p.created_at).getTime(),
-    pages: ((pageRows ?? []) as DBPage[])
-      .filter((pg) => pg.project_id === p.id)
-      .map(dbPageToPage),
-  }));
+  return (projectRows as DBProject[]).map((p): Project => {
+    const pages = ((pageRows ?? []) as DBPage[]).filter((pg) => pg.project_id === p.id);
+    const latestPageMs = pages.reduce(
+      (max, pg) => Math.max(max, new Date(pg.updated_at).getTime()),
+      0
+    );
+    const updatedAt = Math.max(new Date(p.updated_at).getTime(), latestPageMs);
+    return {
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      createdAt: new Date(p.created_at).getTime(),
+      updatedAt,
+      pages: pages.map(dbPageToPage),
+    };
+  });
 }
 
 export async function insertProject(
@@ -83,11 +92,13 @@ export async function insertProject(
 
   if (error) throw error;
   const row = data as DBProject;
+  const now = new Date(row.created_at).getTime();
   return {
     id: row.id,
     name: row.name,
     slug: row.slug,
-    createdAt: new Date(row.created_at).getTime(),
+    createdAt: now,
+    updatedAt: now,
     pages: [],
   };
 }
@@ -194,11 +205,17 @@ export async function fetchProjectBySlug(
 
   if (pgErr) return null;
 
+  const pages = (pageRows ?? []) as DBPage[];
+  const latestPageMs = pages.reduce(
+    (max, pg) => Math.max(max, new Date(pg.updated_at).getTime()),
+    0
+  );
   return {
     id: projectRow.id,
     name: projectRow.name,
     slug: projectRow.slug,
     createdAt: new Date(projectRow.created_at).getTime(),
-    pages: ((pageRows ?? []) as DBPage[]).map(dbPageToPage),
+    updatedAt: Math.max(new Date(projectRow.updated_at).getTime(), latestPageMs),
+    pages: pages.map(dbPageToPage),
   };
 }

@@ -10,5 +10,8 @@ export default async function HomePage() {
 
   if (!user) redirect("/login");
 
-  return <DashboardClient userId={user.id} />;
+  const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+  const displayName = (user.user_metadata?.full_name ?? user.email ?? "") as string;
+
+  return <DashboardClient userId={user.id} avatarUrl={avatarUrl} displayName={displayName} />;
 }

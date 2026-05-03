@@ -12,9 +12,11 @@ interface DocsLayoutProps {
   projectId: string;
   readOnly?: boolean;
   userId?: string;
+  avatarUrl?: string;
+  displayName?: string;
 }
 
-export function DocsLayout({ projectId, readOnly = false, userId }: DocsLayoutProps) {
+export function DocsLayout({ projectId, readOnly = false, userId, avatarUrl, displayName }: DocsLayoutProps) {
   const { projects, hydrate, activePageId, setActivePage, updatePageTitle, updateBlocks } =
     useProjectStore();
 
@@ -48,7 +50,7 @@ export function DocsLayout({ projectId, readOnly = false, userId }: DocsLayoutPr
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <TopBar project={project} readOnly={readOnly} userId={userId} />
+      <TopBar project={project} readOnly={readOnly} userId={userId} avatarUrl={avatarUrl} displayName={displayName} />
       <div className="flex flex-1 min-h-0">
         <Sidebar
           project={project}
