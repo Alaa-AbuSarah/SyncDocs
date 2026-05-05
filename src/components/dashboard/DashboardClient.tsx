@@ -51,6 +51,14 @@ export function DashboardClient({ userId, avatarUrl, displayName }: DashboardCli
           <div className="flex items-center gap-2">
             <Image src="/logo.png" alt="SyncDocs" width={24} height={24} className="object-contain" />
             <span className="text-sm font-semibold text-gray-900">SyncDocs</span>
+            <a
+              href="https://syncdocs.alaaabusarah.com/share/45a411ab-b9cf-4e94-83b7-9ba62b403bbb/syncdocs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              Docs
+            </a>
           </div>
 
           <div className="flex items-center gap-3">
